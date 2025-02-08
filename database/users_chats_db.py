@@ -2,7 +2,7 @@
 import motor.motor_asyncio
 # import datetime
 from info import DATABASE_NAME,DAILY_LIMIT, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, MAX_BTN, URL_MODE, TUTORIAL, IS_TUTORIAL, URL_SHORTENR_WEBSITE, URL_SHORTNER_WEBSITE_API
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ChatJoinRequest
 # Free limit per user
 FREE_LIMIT = 3
@@ -32,7 +32,7 @@ class Database:
             file_id=None,
             caption=None,
             lazy_caption=None,
-            join_date=datetime.date.today().isoformat(),
+            join_date=date.today().isoformat(),
             apply_caption=True,
             upload_as_doc=False,
             thumbnail=None,
