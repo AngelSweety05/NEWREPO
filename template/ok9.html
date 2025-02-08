@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movies Adda - Race Track Car Demo</title>
+  <!-- Babylon.js and Babylon GUI -->
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <style>
+    html, body {
+      width: 100%; 
+      height: 100%; 
+      margin: 0; 
+      padding: 0; 
+      overflow: hidden; 
+      background: #0d0d0d;
+    }
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="renderCanvas"></canvas>
+  <script>
+    // Create Babylon.js engine and attach it to the canvas
+    const canvas = document.getElementById("renderCanvas");
+    const engine = new BABYLON.Engine(canvas, true);
+
+    // Create the scene
+    const createScene = function() {
+      const scene = new BABYLON.Scene(engine);
+      scene.clearColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+
+      // Set up camera
+      const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 70, BABYLON.Vector3.Zero(), scene);
+      camera.attachControl(canvas, true);
+
+      // Lights
+      const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
+      ambientLight.intensity = 0.8;
+      const directionalLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, 1), scene);
+      directionalLight.position = new BABYLON.Vector3(0, 20, -20);
+
+      // Create the race track (a long ground)
+      // The track will extend from z = -30 (start) to z = 30 (finish)
+      const track = BABYLON.MeshBuilder.CreateGround("track", { width: 6, height: 60 }, scene);
+      const trackMat = new BABYLON.StandardMaterial("trackMat", scene);
+      trackMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+      trackMat.emissiveColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+      track.material = trackMat;
+
+      // Create the finish line as a plane with a dynamic texture (the finish line doubles as the "GET FILE" button)
+      const finishLine = BABYLON.MeshBuilder.CreatePlane("finishLine", { width: 6, height: 2 }, scene);
+      finishLine.position = new BABYLON.Vector3(0, 1.01, 30); // Slightly above ground at z=30
+      const finishDT = new BABYLON.DynamicTexture("finishDT", { width: 512, height: 256 }, scene);
+      finishDT.drawText("GET FILE", null, 140, "bold 80px Arial", "white", "black", true);
+      const finishMat = new BABYLON.StandardMaterial("finishMat", scene);
+      finishMat.diffuseTexture = finishDT;
+      finishMat.emissiveColor = new BABYLON.Color3(1, 0.2, 0.2);
+      finishLine.material = finishMat;
+
+      // Create a simple car using basic meshes
+      // Car body: a red box
+      const carBody = BABYLON.MeshBuilder.CreateBox("carBody", { width: 1.5, height: 0.5, depth: 3 }, scene);
+      const carMat = new BABYLON.StandardMaterial("carMat", scene);
+      carMat.diffuseColor = new BABYLON.Color3(0.8, 0, 0);
+      carBody.material = carMat;
+      // Position the car at the starting line: z = -30, centered on x, and slightly above ground
+      carBody.position = new BABYLON.Vector3(0, 0.25, -30);
+
+      // Optionally add wheels as cylinders (for extra visual detail)
+      const wheelOptions = { diameter: 0.7, height: 0.3, tessellation: 16 };
+      const createWheel = function(name, posX, posZ) {
+        const wheel = BABYLON.MeshBuilder.CreateCylinder(name, wheelOptions, scene);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position = new BABYLON.Vector3(posX, 0, posZ);
+        const wheelMat = new BABYLON.StandardMaterial("wheelMat", scene);
+        wheelMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+        wheel.material = wheelMat;
+        wheel.parent = carBody;
+      };
+      createWheel("wheelFL", -0.75, -1);
+      createWheel("wheelFR", 0.75, -1);
+      createWheel("wheelRL", -0.75, 1);
+      createWheel("wheelRR", 0.75, 1);
+
+      // Animate the car along the track from z = -30 to z = 30 over a given duration (e.g., 15 seconds)
+      const totalTime = 15; // seconds for the race
+      const frameRate = 60;
+      const carAnim = new BABYLON.Animation("carMove", "position.z", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+      const carKeys = [];
+      carKeys.push({ frame: 0, value: -30 });
+      carKeys.push({ frame: frameRate * totalTime, value: 30 });
+      carAnim.setKeys(carKeys);
+      carBody.animations = [];
+      carBody.animations.push(carAnim);
+      scene.beginAnimation(carBody, 0, frameRate * totalTime, false);
+
+      // Set up Babylon GUI to show an overlay button when the race (timer) is complete.
+      const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+      const getFileButton = BABYLON.GUI.Button.CreateSimpleButton("getFile", "GET FILE");
+      getFileButton.width = "200px";
+      getFileButton.height = "60px";
+      getFileButton.color = "white";
+      getFileButton.cornerRadius = 20;
+      getFileButton.thickness = 4;
+      getFileButton.background = "#ff0080";
+      getFileButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+      getFileButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+      getFileButton.isVisible = false;
+      advancedTexture.addControl(getFileButton);
+
+      // When the animation is complete, show the button.
+      setTimeout(() => {
+        getFileButton.isVisible = true;
+      }, totalTime * 1000);
+
+      return scene;
+    };
+
+    const scene = createScene();
+
+    // Render loop
+    engine.runRenderLoop(function() {
+      scene.render();
+    });
+
+    // Handle resizing
+    window.addEventListener("resize", function() {
+      engine.resize();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Movies Adda - 3D Animated Character</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Fullscreen canvas and hidden overflow */
+    body {
+      overflow: hidden;
+      margin: 0;
+      background: #0d0d0d;
+    }
+    /* Card element overlay (for reference; you can style it further with neon effects) */
+    #card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 300px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #ff0080;
+      border-radius: 20px;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      /* Optional neon glow */
+      box-shadow: 0 0 30px #ff0080;
+    }
+    /* The three.js canvas covers the whole viewport */
+    #threejs-canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <!-- The card element (purely decorative or informational) -->
+  <div id="card"></div>
+  <!-- The canvas where three.js will render the 3D scene -->
+  <canvas id="threejs-canvas"></canvas>
+  
+  <!-- Using modules so we can import three.js and GLTFLoader -->
+  <script type="module">
+    // Import three.js and necessary modules from CDN
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.0/examples/jsm/controls/OrbitControls.js';
+    
+    // Get the canvas element and create a WebGL renderer
+    const canvas = document.getElementById('threejs-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    
+    // Create a new scene
+    const scene = new THREE.Scene();
+    
+    // Set up the camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 5);
+    
+    // Optionally, add orbit controls for debugging (remove in production)
+    const controls = new OrbitControls(camera, renderer.domElement);
+    
+    // Add ambient and directional lights for a nice, even illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
+    
+    // Create a plane to represent the card in 3D space (for visual reference)
+    const cardGeometry = new THREE.PlaneGeometry(4, 3); // 4 units by 3 units (adjust as needed)
+    const cardMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+    const cardMesh = new THREE.Mesh(cardGeometry, cardMaterial);
+    cardMesh.position.set(0, 0, 0); // Center the card at origin
+    scene.add(cardMesh);
+    
+    // Load the 3D model of the cute girl (replace with your own model URL)
+    const loader = new GLTFLoader();
+    let girl;  // will hold the model
+    loader.load(
+      'https://example.com/path/to/your/model.gltf',  // <-- REPLACE THIS URL with your actual GLTF model URL
+      function (gltf) {
+        girl = gltf.scene;
+        // Scale and rotate the model as necessary
+        girl.scale.set(1, 1, 1);
+        // Initially position her behind the card (card is at z = 0; put her at z = -1)
+        girl.position.set(0, -1.5, -1);
+        scene.add(girl);
+        
+        // If your model has animations, you could set up an AnimationMixer here.
+        // For this example, we simply animate her position.
+        animateGirl();
+      },
+      undefined,
+      function (error) {
+        console.error('Error loading the model:', error);
+      }
+    );
+    
+    // Animate the girl so she emerges from behind the card.
+    function animateGirl() {
+      const duration = 3; // seconds for the transition
+      const startZ = -1;  // starting z-position (behind the card)
+      const endZ = 1;     // ending z-position (in front of the card)
+      const startTime = performance.now();
+      
+      function animate() {
+        const elapsed = (performance.now() - startTime) / 1000; // time in seconds
+        const t = Math.min(elapsed / duration, 1);  // normalized time (0 to 1)
+        
+        // Smooth interpolation (ease-in-out) for a natural walk/run motion
+        const smoothT = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
+        
+        // Update the girl's position: move her from behind the card to in front.
+        if (girl) {
+          girl.position.z = startZ + (endZ - startZ) * smoothT;
+          // Optionally, add a slight side-to-side sway to simulate a natural gait.
+          girl.position.x = 0.5 * Math.sin(smoothT * Math.PI * 2);
+        }
+        
+        if (t < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Animation complete.
+          // Here you could trigger additional animations (like a waving or pointing gesture).
+        }
+      }
+      animate();
+    }
+    
+    // Render loop for three.js
+    function animateScene() {
+      requestAnimationFrame(animateScene);
+      renderer.render(scene, camera);
+    }
+    animateScene();
+    
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

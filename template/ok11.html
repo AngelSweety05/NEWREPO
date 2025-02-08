@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movies Adda - Ultra Advanced Neon Experience</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <!-- AOS (Animate On Scroll) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Particles.js (for background animation) -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      position: relative;
+      color: #fff;
+    }
+    /* Particles.js Background Container */
+    #particles-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+    /* Main Content Overlay */
+    .content-overlay {
+      position: relative;
+      z-index: 10;
+    }
+    /* Sweet Neon Card */
+    .neon-card {
+      position: relative;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 20px;
+      background: rgba(255, 182, 193, 0.9);
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+      overflow: hidden;
+    }
+    .neon-card::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(45deg, #ff69b4, #ff1493, #db7093, #ff69b4);
+      background-size: 400%;
+      z-index: -1;
+      filter: blur(10px);
+      animation: neonGlow 10s linear infinite;
+    }
+    .neon-card::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 18px;
+      z-index: -1;
+    }
+    @keyframes neonGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Refined 3D Neon Header */
+    .movies-adda {
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      position: relative;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493;
+      transform: perspective(800px) rotateX(8deg) rotateY(8deg);
+    }
+    .movies-adda::after {
+      content: "Movies Adda";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      z-index: -1;
+      color: #ff69b4;
+      filter: blur(6px);
+      opacity: 0.8;
+    }
+    /* SVG Circular Timer */
+    .timer-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 1rem;
+    }
+    .timer-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .timer-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 12;
+    }
+    .timer-circle {
+      fill: none;
+      stroke: #ff69b4;
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      text-shadow: 0 0 10px #ff1493;
+    }
+    /* Refined Neon Button */
+    .neon-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 300px;
+      padding: 1rem;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: 2px solid #ff69b4;
+      border-radius: 25px;
+      background: #ff69b4;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin: 0 auto;
+    }
+    .neon-btn:hover {
+      color: #fff;
+      background: #ff1493;
+    }
+    /* Footer Styles */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1rem;
+      text-shadow: 0 0 10px #ff69b4;
+    }
+    /* Responsive Adjustments for Mobile */
+    @media (max-width: 600px) {
+      .movies-adda {
+        font-size: 2.5rem;
+      }
+      .timer-container {
+        width: 150px;
+        height: 150px;
+      }
+      .timer-text {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Particles.js Background Container -->
+  <div id="particles-js"></div>
+
+  <!-- Main Content Overlay -->
+  <div class="min-h-screen flex flex-col items-center justify-center relative z-10 p-4 content-overlay">
+    <!-- 3D Neon Header -->
+    <div class="movies-adda" data-aos="zoom-in">
+      Movies Adda
+    </div>
+
+    <!-- Neon Hero Card -->
+    <div class="neon-card" data-aos="fade-up">
+      <h2 class="text-center text-2xl font-bold mb-4">Your Link is Almost Ready!</h2>
+      
+      <!-- SVG Circular Timer -->
+      <div class="timer-container">
+        <svg class="timer-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+          <circle class="timer-circle-bg" cx="100" cy="100" r="80"></circle>
+          <circle class="timer-circle" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+        </svg>
+        <div class="timer-text" id="timerText">15 s</div>
+      </div>
+      
+      <p class="text-center text-xl font-semibold mb-4" id="countdownText">
+        Preparing your file...
+      </p>
+      
+      <!-- Neon Button (hidden until countdown ends) -->
+      <a id="redirectButton" href="thefileislazydeveloper" target="_blank" class="neon-btn" style="display: none;" onclick="redirectToBot()">
+        📂 Get File 📂
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer data-aos="fade-up">
+    🧩 With Love <a href="https://telegram.me/lazydeveloperr" target="_blank" class="underline font-bold">LazyDeveloper</a> ❤
+  </footer>
+
+  <!-- AOS Script -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1200 });
+  </script>
+
+  <!-- GSAP for Timer Animation -->
+  <script>
+    let countdown = 15;
+    const totalTime = 15;
+    const timerText = document.getElementById("timerText");
+    const timerCircle = document.querySelector(".timer-circle");
+    const totalDashArray = 502; // Approx. circumference for r=80 circle
+
+    const updateTimer = () => {
+      if (countdown >= 0) {
+        timerText.textContent = countdown + " s";
+        let progress = countdown / totalTime;
+        let dashOffset = totalDashArray * progress;
+        gsap.to(timerCircle, { duration: 1, strokeDashoffset: dashOffset, ease: "linear" });
+        countdown--;
+      } else {
+        clearInterval(timerInterval);
+        timerText.textContent = "0 s";
+        document.getElementById("redirectButton").style.display = "flex";
+        document.getElementById("countdownText").textContent = "Click the button below to get file 👇";
+        gsap.fromTo("#redirectButton", { opacity: 0, scale: 0.5 }, { duration: 0.8, opacity: 1, scale: 1, ease: "back.out(1.7)" });
+      }
+    };
+
+    let timerInterval = setInterval(updateTimer, 1000);
+
+    function redirectToBot() {
+      window.location.href = "thefileislazydeveloper";
+    }
+  </script>
+
+  <!-- Particles.js Background Animation -->
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#ff69b4"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000"
+          }
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": false
+        },
+        "size": {
+          "value": 3,
+          "random": true
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#ff1493",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out"
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          }
+        },
+        "modes": {
+          "repulse": {
+            "distance": 100,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+</body>
+</html>
