@@ -50,7 +50,7 @@ AUTH_USERS = (auth_users + ADMINS) if auth_users else []
 auth_grp = environ.get('AUTH_GROUP')
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
-AUTH_CHANNEL = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('AUTH_CHANNEL', '-1001892110468 -1001933550645').split()]
+AUTH_CHANNEL = [int(cha) if id_pattern.search(cha) else cha for cha in environ.get('AUTH_CHANNEL', '-1002240809603 -1001765107260').split()]
 LAZY_DIVERTING_CHANNEL = int(environ.get('LAZY_DIVERTING_CHANNEL', ''))
 # LAZY_DIVERTING_CHANNEL = int(environ.get('LAZY_DIVERTING_CHANNEL', ''))
 
@@ -192,7 +192,7 @@ LANGUAGES = ["hindi", "hin", "english", "eng", "korean", "kor", "urdu", "urd","c
 SEASONS = ["season 1" , "season 2" , "season 3" , "season 4", "season 5" , "season 6" , "season 7" , "season 8" , "season 9" , "season 10"]
 QUALITIES = ["360P", "", "480P", "", "720P", "", "1080P", "", "1440P", "", "2160P", ""]
 
-MAX_LAZY_BTNS = int(environ.get("MAX_LAZY_BTNS", "8"))
+MAX_LAZY_BTNS = int(environ.get("MAX_LAZY_BTNS", "6"))
 MAX_BTN = is_enabled((environ.get('MAX_BTN', "True")), True)
 
 # Auto Delete For Group Message (Self Delete) #
@@ -217,19 +217,19 @@ MAX_SUBSCRIPTION_TIME = int(environ.get('MAX_SUBSCRIPTION_TIME', '24')) # KEEP T
 FILE_AUTO_DELETE_TIME = int(environ.get('FILE_AUTO_DELETE_TIME', '300')) #in seconds - 300 seconds ==> 5 minutes 
 GROUP_MSG_DELETE_TIME = int(environ.get('GROUP_MSG_DELETE_TIME', '600')) #in seconds - 600 seconds ==> 10 minutes 
 # DONATION_LINK = environ.get("DONATION_LINK","https://buymeacoffee.com/lazydeveloperr")
-DONATION_LINK = environ.get("DONATION_LINK","https://telegra.ph/file/ca18e2c794f4ea1c3135b.jpg")
+DONATION_LINK = environ.get("DONATION_LINK","https://buymeacoffee.com/lazyDeveloperr")
 CHANNELS_PER_PAGE = 8 # AUTH CHANELS LISTS ## FOR ADMINS ❤
-DAILY_LIMIT = 3 
+DAILY_LIMIT = 3
 
-MAX_SEASONS_PER_PAGE = 10
-MAX_EPISODES_LIST = 10 ## FOR SEASON BTN ❤
-MAX_EPISODES_PER_PAGE = 8 ## FOR SEASON BTN ❤
+MAX_SEASONS_PER_PAGE = 12
+MAX_EPISODES_LIST = 12 ## FOR SEASON BTN ❤
+MAX_EPISODES_PER_PAGE = 6 ## FOR SEASON BTN ❤
 
 MAX_LANG_PER_PAGE = 10 ## FOR SEASON BTN ❤
-MAX_LANG_FILE_PER_PAGE = 8 ## FOR SEASON BTN ❤
+MAX_LANG_FILE_PER_PAGE = 6 ## FOR SEASON BTN ❤
 
 MAX_QUAL_PER_PAGE = 10 ## FOR SEASON BTN ❤
-MAX_QUAL_FILE_PER_PAGE = 8 ## FOR SEASON BTN ❤
+MAX_QUAL_FILE_PER_PAGE = 6 ## FOR SEASON BTN ❤
 
 CHANNEL_NAME = "Movies Addda"
 # BACK_BTN_TXT = "⋞ ʙᴀᴄᴋ" #◀️
