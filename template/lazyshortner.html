@@ -424,5 +424,32 @@
     });
     gsap.to('.water-overlay', { duration: 4, x: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
   </script>
+
+  <script>
+        document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+            (e.ctrlKey && e.key === 'u') ||
+            e.ctrlKey ||
+            e.shiftKey ||
+            e.altKey
+        ) {
+            e.preventDefault();
+        }
+    });
+  </script>
+  <script>
+        // Detect DevTools Opened
+        setInterval(() => {
+            if (window.outerHeight - window.innerHeight > 100 || window.outerWidth - window.innerWidth > 100) {
+                alert("DevTools detected! Please close it.");
+                window.location.reload();
+            }
+        }, 1000);
+  </script>
 </body>
 </html>

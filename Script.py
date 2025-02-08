@@ -1,8 +1,12 @@
 class script(object):
     START_TXT = """<blockquote>Hey {} !!\nI'm the First AI-Powered Lazy's Asset, made for u with ❤\n💬 Just type the movie name & let A.I do the magic!</blockquote>
 """ 
-    UPGRADE_TEXT = """😱 Oh no! Your video quota is up for today!
-💎 Want more? Join these VIP channels & keep the fun rolling!
+    EXPIRED_TEXT = """Your video Quota is up for today!
+💎GET unlimited #FREE Access by Joining our VIP channels.
+📆 Or wait until tomorrow... but who likes waiting?😜"""
+
+    UPGRADE_TEXT = """⭕Join these VIP channels to GET #FREE Access! & keep the fun rolling ♥!
+
 📆 Or wait until tomorrow... but who likes waiting? 😜"""
     
     VERIFIED_TEXT = """𓆩ཫ❤ <b><u>ᴄᴏɴɢʀᴀᴛꜱ {} </u></b>❤ཀ𓆪

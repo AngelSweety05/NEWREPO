@@ -240,6 +240,7 @@ async def is_subscribed(bot, channel, lazyuserr):
 
     return False
 
+# ==============================================================================
 async def lazy_has_subscribed(client, update):
     if not AUTH_CHANNEL: 
         return True

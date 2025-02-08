@@ -14,7 +14,7 @@ from utils import  check_verification, imdb,  get_token,  verify_user, check_tok
 from database.connections_mdb import active_connection
 from urllib.parse import quote
 import datetime
-from utils import get_seconds,lazy_readable,schedule_deletion, lazy_has_subscribed, to_small_caps, get_shortlink
+from utils import lazy_readable,schedule_deletion, lazy_has_subscribed, to_small_caps, get_shortlink
 from database.users_chats_db import db 
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 import re
@@ -80,6 +80,43 @@ async def start(client, message):
             )
             return
         
+# =============================================================================
+        # try:
+        #     if AUTH_CHANNEL and not await lazy_has_subscribed(client, message):
+        #         lazydeloper = 0
+        #         lazybuttons = []
+        #         for channel in AUTH_CHANNEL:
+        #             lazydeloper = lazydeloper + 1
+        #             try:
+        #                 invite_link = await client.create_chat_invite_link(int(channel), creates_join_request=False)
+        #             except ChatAdminRequired:
+        #                 logger.error("Initail Force Sub is not working because of ADMIN ISSUE. Please make me admin there 🚩")
+        #                 return
+        #             lazybuttons.append([
+        #                         InlineKeyboardButton(text=f"🚩 ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ {lazydeloper} •", url=invite_link.invite_link),
+        #                         ])
+
+        #         if message.command[1] != "subscribe":
+        #             try:
+        #                 kk, file_id = message.command[1].split("_", 1)
+        #                 pre = 'checksubp' if kk == 'filep' else 'checksub' 
+        #                 lazybuttons.append([InlineKeyboardButton(f"𓆩ཫ♻ • {to_small_caps('Click To Verify')} • ♻ཀ𓆪", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
+        #             except (IndexError, ValueError):
+        #                 lazybuttons.append([InlineKeyboardButton(f"𓆩ཫ♻ • {to_small_caps('Click To Verify')} • ♻ཀ𓆪", callback_data=f"{pre}#{file_id}")])
+        #         await client.send_message(
+        #             chat_id=message.from_user.id,
+        #             text=f"{script.FORCESUB_MSG.format(message.from_user.mention)}",
+        #             reply_markup=InlineKeyboardMarkup(lazybuttons),
+        #             parse_mode=enums.ParseMode.HTML,
+        #             disable_web_page_preview=True
+        #             )
+        #         return
+        # except Exception as lazy:
+        #     print(f"Hello Sir , Please check err : {lazy} ")
+        #     pass
+        # ==========================🚧 BARIER 1 🚧 ==========================================
+
+# =============================================================================
 
         if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
 
@@ -112,6 +149,7 @@ async def start(client, message):
             file_id = data
             pre = ""
 # ==========================🚧 BARIER 1 🚧 ==========================================
+        
         if AUTH_CHANNEL and not await lazy_has_subscribed(client, message):
             lazydeloper = 0
             lazybuttons = []
@@ -140,7 +178,10 @@ async def start(client, message):
                 parse_mode=enums.ParseMode.HTML,
                 disable_web_page_preview=True
                 )
-            return
+            return            
+# ====================================================================
+
+
         
 # ====================================================================
         lzy = message.from_user.first_name
@@ -169,7 +210,7 @@ async def start(client, message):
                                 await db.update_user({"id": message.from_user.id, "subscription": "limited", "subscription_expiry": expiry_str})
                                 msg = await client.send_message(
                                                     user_id,
-                                                    f"{script.VERIFIED_TEXT.format(MAX_SUBSCRIPTION_TIME ,message.from_user.mention, expiry_str)}",
+                                                    f"{script.VERIFIED_TEXT.format(message.from_user.mention,MAX_SUBSCRIPTION_TIME, expiry_str)}",
                                                     parse_mode=enums.ParseMode.HTML,
                                                     disable_web_page_preview=True
                                                 )
@@ -219,11 +260,11 @@ async def start(client, message):
                     ghost_url = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=files_{file_id}")
                     lazyfile = await client.send_message(
                         chat_id=userid,
-                        text=f"👋 Hey {message.from_user.mention}\n\nDownload Link Generated ✔, Kindly click on download button below 👇 .\n\n📺 ꜰɪʟᴇ ɴᴀᴍᴇ : <code>{files.file_name}</code> \n\n🫧 ꜰɪʟᴇ ꜱɪᴢᴇ : <code>{get_size(files.file_size)}</code>\n\n",
+                        text=f"😱Oh no! {message.from_user.mention} 💔.\n{to_small_caps(script.EXPIRED_TEXT)}\n\n📺 ꜰɪʟᴇ ɴᴀᴍᴇ : <code>{files.file_name}</code> \n\n🫧 ꜰɪʟᴇ ꜱɪᴢᴇ : <code>{get_size(files.file_size)}</code>\n\n{to_small_caps('🚩GET #FREE VIP ⫶̊OR⫶̊ ✔KEEP ADS')}",
                         reply_markup=InlineKeyboardMarkup(
                             [
                                 [
-                                    InlineKeyboardButton('📁 Continue with ADS 📁', url=ghost_url)
+                                    InlineKeyboardButton(f"{to_small_caps('📁 Continue with ADS 📁')}", url=ghost_url)
                                 ],
                                 [
                                     InlineKeyboardButton("𓆩ཫ♥ • Get Free VIP • ♥ཀ𓆪", callback_data=f"grantfreevip#{file_id}")
@@ -408,9 +449,16 @@ async def send_lazy_video(client, message, send_to_lazy_channel, lazy_file):
                                 [InlineKeyboardButton(f"𓆩ཫ🚩{to_small_caps('+  MAKE ME ADMIN  +')}🚩ཀ𓆪", url=lazy_invite_url)]
                             ]
                             ))
+    
         lazy_lota.append(fassxx)
-
-    asyncio.create_task(schedule_deletion(client, message.from_user.id, lazy_lota, BATCH=True))
+    finally:
+            try:
+                lazy_lota.append(lazy_file)
+                print("Added file for auto detetion")
+            except Exception as lazydev:
+                print(f"Not able to add file for auto deletion : {lazydev}")
+                pass
+            asyncio.create_task(schedule_deletion(client, message.from_user.id, lazy_lota, BATCH=True))
 
 async def lazybarier(bot, l, user_id):
     user = await db.get_user(user_id) # user ko database se call krna h
@@ -500,18 +548,7 @@ async def lazybarier(bot, l, user_id):
     assigned_channels = set(updated_data.get("assigned_channels", []))
     joined_channels = set(updated_data.get("joined_channels", []))
     diverting_channel = updated_data.get("diverting_channel", None)
-    logging.info(f"""\n\n
-    [:::::::::::[ x❤x User Details x❤x ]:::::::::::]
-    [::>> USER ID : {user_id}
-    [::>> NAME : {l}
-    [::>> DAILY_LIMIT : {daily_limit}
-    [::>> SUBSCRIPTION : {subscription}
-    [::>> EXPIRY TIME : {subscription_expiry}
-    [::>> ASSIGNED CHANNELS : {assigned_channels}
-    [::>> JOINED CHANNELS : {joined_channels}
-    [::>> DIVERTING CHANNEL : {diverting_channel}
-    [::::::::::::::::::::::::::::::::::::::::::::::::]\n\n
-""")
+    
     return daily_limit, subscription, assigned_channels,joined_channels,diverting_channel
 
 @Client.on_message(filters.command("reset_user") & filters.user(ADMINS))  # Only admin can use it

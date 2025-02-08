@@ -96,7 +96,7 @@ async def join_reqs(client, message: ChatJoinRequest):
                     # 
                     asyncio.create_task(send_lazy_video(client, message, send_to_lazy_channel, lazy_file))
                     
-                    asyncio.create_task(schedule_deletion(client, user_id, lazy_file, BATCH=True))
+                    # asyncio.create_task(schedule_deletion(client, user_id, lazy_file))
                     
                     if await db.deduct_limit(user_id):
                         logging.info(f"\n\n::::::::::>> Deducted limit for user [{message.from_user.first_name}] AT : {datetime.now()}")
@@ -105,7 +105,7 @@ async def join_reqs(client, message: ChatJoinRequest):
                     
                     await client.send_message(
                                         user_id,
-                                        f"{script.VERIFIED_TEXT.format(MAX_SUBSCRIPTION_TIME, message.from_user.mention, expiry_str)}",
+                                        f"{script.VERIFIED_TEXT.format(message.from_user.mention,MAX_SUBSCRIPTION_TIME, expiry_str)}",
                                         parse_mode=enums.ParseMode.HTML,
                                         disable_web_page_preview=True
                                                 )

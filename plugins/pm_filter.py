@@ -16,7 +16,7 @@ from info import *
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ForceReply, Message
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size,lazy_readable,lazy_has_subscribed,schedule_deletion, to_small_caps,get_poster,get_popular_movies, get_lazy_goat_movies, get_lazy_trending_movies, temp,imdb, get_settings, save_group_settings
+from utils import get_size,lazy_readable,lazy_has_subscribed,is_subscribed, to_small_caps,get_poster,get_popular_movies, get_lazy_goat_movies, get_lazy_trending_movies, temp,imdb, get_settings, save_group_settings
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_file_details,get_search_results_badAss_LazyDeveloperr
 from database.lazy_utils import progress_for_pyrogram, convert
@@ -2121,9 +2121,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
                 if AUTH_CHANNEL and not await lazy_has_subscribed(client, query):
                     print("NO AUTH SUBS")
-                    await query.answer(url=f"https://t.me/{temp.U_NAME}?start=checkvip_{file_id}")
+                    await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                     return
-                elif subscription == "free":    
+                if subscription == "free":    
                     await query.answer(url=f"https://t.me/{temp.U_NAME}?start=sendfiles_{file_id}")
                     print("🚩 sendfiles ")
                     return
@@ -2868,12 +2868,13 @@ async def auto_filter(client, msg, spoll=False):
             search = search.lower()
             find = search.split(" ")
             search = ""
-            removes = ["in", "series", "full", "horror", "thriller", "mystery", "print", "file"]
+            removes = ["in", "series", "full", "horror", "thriller", "mystery", "print", "file", "2k", "4k", "2004", "2024", "2025", "2020", "2021", "2022", "2023","new","movies", "the", "a", "an", "480", "480p", "720p", "720", "1080p", "1080", "hindi","english", "eng", "hin","kor","korean" ]
             for x in find:
                 if x in removes:
                     continue
                 else:
                     search = search + x + " "
+                    # print(f"New search is : {search}")
             search = re.sub(r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|bro|bruh|broh|helo|that|find|dubbed|link|venum|iruka|pannunga|pannungga|anuppunga|anupunga|anuppungga|anupungga|film|undo|kitti|kitty|tharu|kittumo|kittum|movie|any(one)|with\ssubtitle(s)?)", "", search, flags=re.IGNORECASE)
             search = re.sub(r"\s+", " ", search).strip()
             search = search.replace("-", " ")
@@ -2964,9 +2965,8 @@ async def auto_filter(client, msg, spoll=False):
     user = message.from_user
     full_name = user.first_name + " " + user.last_name if user.last_name else user.first_name
     # waiting overs here @LazyDeveloperr
-    top = await db.get_top_searches()
-    await db.increment_search_count(search, lazyuser_id)
-
+    #top = await db.get_top_searches()
+    
     waiting_message = await message.reply_text(f"Setting up your request {full_name}...")
     imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
     TEMPLATE = settings['template']
@@ -3033,12 +3033,13 @@ async def auto_filter(client, msg, spoll=False):
         random_message_template = random.choice(LAZY_MESSAGES)
         set_message = random_message_template.format(mention_user)
 
-        cap = f"💘 {set_message}\n\n <b>⚡ Here is what i found for your query {search} 👇</b>"
+        cap = f"💃 {set_message}\n\n <b>⚡ Here is what i found for your query {search} 👇</b>"
     if imdb and imdb.get('poster'):
         try:
             z = await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
-                                        reply_markup=InlineKeyboardMarkup(btn))
-            
+                                       reply_markup=InlineKeyboardMarkup(btn))
+		
+            await db.increment_search_count(search, lazyuser_id)
             if SELF_DELETE:
                 await asyncio.sleep(SELF_DELETE_SECONDS)
                 await z.delete()
@@ -3048,7 +3049,7 @@ async def auto_filter(client, msg, spoll=False):
             poster = pic.replace('.jpg', "._V1_UX360.jpg")
 
             m = await message.reply_photo(photo=poster, caption=cap[:1024], reply_markup=InlineKeyboardMarkup(btn))
-
+            await db.increment_search_count(search, lazyuser_id)
             if SELF_DELETE:
                 await asyncio.sleep(SELF_DELETE_SECONDS)
                 await m.delete()
@@ -3057,15 +3058,17 @@ async def auto_filter(client, msg, spoll=False):
         except Exception as e:
             logger.exception(e)
             n = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-            if SELF_DELETE:
-                await asyncio.sleep(SELF_DELETE_SECONDS)
-                await n.delete()
-                await message.delete()
+            #await db.increment_search_count(search, lazyuser_id)
+	    
+	    #if SELF_DELETE:
+                #await asyncio.sleep(SELF_DELETE_SECONDS)
+                #await n.delete()
+                #await message.delete()
     else:
         
         # p = await message.reply_photo(photo=random.choice(PICS), caption=cap, reply_markup=InlineKeyboardMarkup(btn))
         p = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-        
+        await db.increment_search_count(search, lazyuser_id)
         if SELF_DELETE:
             await asyncio.sleep(SELF_DELETE_SECONDS)
             await p.delete()
